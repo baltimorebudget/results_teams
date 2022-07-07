@@ -1,0 +1,44 @@
+---
+output: pdf_document
+documentclass: report
+geometry: margin=.5in
+fontsize: 11pt
+font: Roboto
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+*The Bureau of the Budget and Management Research, Results Teams*
+
+## City Service: `r unique(pms$"Service Name"[pms$"Service ID"==i])`
+
+**Agency Name**: `r unique(data$"Agency Name"[data$"Program ID"==i])` 
+\newline
+**Pillar**: `r unique(data$"Objective Name"[data$"Program ID"==i])`
+\newline
+**Last Year's Budget**: `r scales::dollar(sum(data$"FY22 Adopted"[data$"Program ID"==i]))`
+\newline
+**Current Level of Service Budget**: `r scales::dollar(sum(data$"FY23 CLS"[data$"Program ID"==i]))`
+<!-- \newline -->
+<!-- **Proposed Budget*: `r scales::dollar(sum(data$"FY23 Proposal"[data$"Program ID"==i]))` -->
+
+### Performance Data
+```{r pm_table, echo = FALSE, warning = FALSE}
+
+df <- filter(pms, `Service ID` == i) %>%
+  select(-`Service Name`, -`Met`, -`Service ID`)
+knitr::kable(df)
+```
+
+### Performance Questions and Responses
+```{r impact_statements, echo = FALSE, results = 'asis', warning = FALSE}
+
+df <- filter(impacts, `Service ID` == i) %>%
+  ungroup() %>%
+  select(`Question #`, `Service Question`, `Agency Response`)
+
+for (n in range(df$`Question #`)) {
+  cat(paste(df$`Service Question`[df$`Question #` == n], "\n\n", df$`Agency Response`[df$`Question #` == n], "\n\n"))
+}
+```
