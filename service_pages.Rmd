@@ -23,13 +23,6 @@ knitr::opts_chunk$set(echo = FALSE)
 <!-- \newline -->
 <!-- **Proposed Budget*: `r scales::dollar(sum(data$"FY23 Proposal"[data$"Program ID"==i]))` -->
 
-### Performance Data
-```{r pm_table, echo = FALSE, warning = FALSE}
-
-df <- filter(pms, `Service ID` == i) %>%
-  select(-`Service Name`, -`Met`, -`Service ID`)
-knitr::kable(df)
-```
 
 ### Performance Questions and Responses
 ```{r impact_statements, echo = FALSE, results = 'asis', warning = FALSE}
@@ -40,5 +33,25 @@ df <- filter(impacts, `Service ID` == i) %>%
 
 for (n in range(df$`Question #`)) {
   cat(paste(df$`Service Question`[df$`Question #` == n], "\n\n", df$`Agency Response`[df$`Question #` == n], "\n\n"))
+}
+```
+
+### Performance Data
+```{r pm_table, echo = FALSE, warning = FALSE}
+
+df <- filter(pms, `Service ID` == i) %>%
+  select(-`Service Name`, -`Met`, -`Service ID`)
+knitr::kable(df)
+```
+
+### Story Behind the Curve
+
+```{r story_behind_curve, echo = FALSE, results = 'asis', warning = FALSE}
+
+df <- filter(story, `Service ID` == i)
+
+for (pm in df$PM) {
+  cat("\n####", pm, "\n")
+  cat(df$Story[df$PM==pm], "\n")
 }
 ```

@@ -1,7 +1,12 @@
+.libPaths("C:/Users/sara.brumfield2/OneDrive - City Of Baltimore/Documents/r_library")
 library(markdown)
 library(knitr)
 library(scales)
+library(tidyverse)
+library(openxlsx)
+library(dplyr)
 
+#comes from Budget Book; Scorecard API
 pms <- readxl::read_excel("C:/Users/sara.brumfield2/OneDrive - City Of Baltimore/Documents/GIT/agency_detail_py/budget_data/PM_Data.xlsx") %>%
   mutate(`Service ID` = as.numeric(`Service ID`)) %>%
   select(-`Extra PM Table`, -`Type`)
@@ -29,6 +34,20 @@ impacts <- impacts %>%
                                       TRUE ~ `Agency Response`)) %>%
   select(`Service ID`, `Service Name`, `Question #`,`Service Question`, `Agency Response`) %>%
   distinct()
+
+
+#from Scorecard's custom report Story Behind the Curve
+story <- readxl::read_excel("Story Behind the Curve.xlsx", skip = 5) %>%
+  select(`Agency`, `Service`, `PM`, `Note Text`) %>%
+  mutate(`Service ID` = as.numeric(substr(`Service`, start = 9, stop = 11))) %>%
+  filter(!is.na(`Service ID`)) %>%
+  filter(!duplicated(paste(`Service ID`, `PM`))) %>%
+  select(`Service ID`, `PM`, `Note Text`) %>%
+  group_by(`Service ID`, `PM`) %>%
+  mutate(`Story` = paste0(`Note Text`, collapse = "\\n")) %>%
+  ungroup() %>%
+  select(-`Note Text`) %>%
+  drop_na(`Service ID`)
 
 for (i in unique(pms$`Service ID`)) {
   rmarkdown::render("service_pages.Rmd", 
