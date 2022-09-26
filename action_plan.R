@@ -52,7 +52,7 @@ test <- df %>% select(`PillarText`, `Goal`, `Action`, starts_with("Service")) %>
 #                          TRUE ~ ID1))
 
 #first value is lookup value
-test2 <- test %>% cbind(test[1:4], stack(test[5:10]))
+test2 <- df %>% cbind(df[1:4], stack(df[5:10]))
 
 test3 <- test2[, c(12:16)]  %>%
   mutate(values = as.numeric(values)) %>%

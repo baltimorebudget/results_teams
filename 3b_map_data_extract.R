@@ -6,11 +6,11 @@ library(AzureGraph)
 devtools::load_all("G:/Analyst Folders/Sara Brumfield/bbmR")
 
 
-data <- readxl::read_excel("G:/Fiscal Years/Fiscal 2023/Planning Year/7. Council/1. Line Item Reports/line_items_2022-06-24_Final.xlsx", sheet = "Details")
+data <- readxl::read_excel("G:/Fiscal Years/Fiscal 2023/Projections Year/1. July 1 Prepwork/Appropriation File/Fiscal 2023 Appropriation File_With_Positions_WK_Accounts.xlsx", sheet = "FY23 Appropriation File")
 
-total <- max(data$`FY23 Proposal`)
+total <- max(data$`FY23 Adopted`)
   
-data <- data %>% select(`Objective Name`, `Agency Name`, `Program ID`, `Program Name`, `FY22 Adopted`, `% - Change vs Adopted`, `FY23 CLS`, `FY23 Proposal`) %>%
+df <- data %>% select(`Objective Name`, `Agency ID`, `Agency Name`, `Program ID`, `Program Name`, `Fund Name`, `DetailedFund Name`, `FY23 Adopted`) %>%
   filter(!is.na(`Objective Name`))
 
 #Mayor's Action Plan goals, actions and measures
@@ -23,5 +23,5 @@ mayor_ap <- lists$list_items() %>%
   filter(PillarText != "REMOVE") %>%
   arrange("PillarText", "Goal", "Action")
 
-# export_excel(mayor_ap, "SharePoint", "outputs/MAP Action Detail from Sharepoint.xlsx")
+export_excel(mayor_ap, "SharePoint", "outputs/MAP Action Detail from Sharepoint.xlsx")
 
