@@ -4,7 +4,24 @@ library(tidyr)
 library(openxlsx)
 devtools::load_all("G:/Analyst Folders/Sara Brumfield/bbmR")
 
-df <- readxl::read_excel("G:/Analyst Folders/Sara Brumfield/exp_planning_year/2c_proposals_results_teams/outputs/MAP Services Master.xlsx", sheet = "SharePoint")
+df <- readxl::read_excel("G:/Analyst Folders/Sara Brumfield/exp_planning_year/2c_proposals_results_teams/outputs/MAP Action Detail from SharePoint.xlsx", sheet = "SharePoint") %>%
+  mutate( `Service Name` = trimws(gsub('[0-9]+,', '', `City Service:Title`), which = "left"),
+          `City Agency` = trimws(gsub('[0-9]+,', '', `City Service:Agency`), which = "left")) %>%
+separate(col = "City Service:Title", into = c("Service Name 1", "Service Name 2", "Service Name 3",
+                                          "Service Name 4"), sep = ", ", remove = TRUE) %>%
+  unite(col = "Service IDs", c(`Primary Service ID`, `Additional Service ID`, `Secondary Service ID`, `Tertiary Service ID`, `Quaternary Service ID`), 
+                                       sep = ", ", remove = TRUE, na.rm = TRUE) %>%
+  select(-IDs, -`City Service`, -`Service Name 1`, -`Service Name 2`, -`Service Name 3`, -`Service Name 4`)
+
+#laura's file
+df2 <- readxl::read_excel("G:/Fiscal Years/Fiscal 2024/Planning Year/2. Prop/Agency Guidance/MAP Action Detail_FY23 Funding.xlsx", sheet = "Sheet1") %>%
+  mutate(`Action Plan Item Number` = as.character(`Action Plan Item Number`))
+
+df3 <- left_join(df2, df %>% select(`Service IDs`, `Service Name`, `City Agency`, `Action`), by = "Action")
+
+
+
+
 
 #fuck this shit======
 # test <- df %>% mutate(`City Service` = gsub(pattern = ",", replacement = "", x = df$`City Service`, ignore.case = FALSE),
